@@ -16,7 +16,7 @@ export function LandingHero() {
         >
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
             Transform Your Banking Experience with{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">UBI CRM</span>
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">UBI</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-[600px]">
             The all-in-one platform that revolutionizes customer relationships in banking. Seamless omnichannel
