@@ -11,9 +11,11 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, CheckCircle, AlertTriangle, User, Calendar, File, Camera, UploadCloud, Check } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar as CalendarPrimitive } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
+import { Calendar as CalendarPrimitive } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
+
 
 
 const step1Schema = z.object({
@@ -222,6 +224,7 @@ const Step3 = ({ form, setSelfieFile, setIdentityProofFile }: { form: any, setSe
                 name="identityProof"
                 render={({ field }) => (
                     <FormItem>
+
                         <FormLabel>Identity Proof (e.g., Passport, ID Card)</FormLabel>
                         <FormControl>
                             <div className="flex items-center gap-4">
