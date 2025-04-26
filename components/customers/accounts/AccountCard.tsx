@@ -1,6 +1,7 @@
 "use client";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Eye, EyeClosed } from "lucide-react";
 import Image from "next/image";
@@ -18,7 +19,7 @@ export default function AccountCard(accInfo: AccountProps) {
   const [revealAccNum, setRevealAccNum] = useState(false);
 
   return (
-    <div className="grid grid-cols-2 gap-4 justify-center items-center bg-card text-card-foreground rounded-md max-w-lg p-8">
+    <Card className="grid grid-cols-2 gap-4 justify-center items-center  max-w-lg p-8">
       <AspectRatio ratio={16 / 9} className="bg-muted">
         <Image
           src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
@@ -60,6 +61,6 @@ export default function AccountCard(accInfo: AccountProps) {
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

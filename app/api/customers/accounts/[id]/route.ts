@@ -1,3 +1,4 @@
+import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 interface AccountProps{
@@ -24,15 +25,6 @@ const accounts = [
     bank_id: 102,
     account_number: "SBIN000112",
     account_type: "CURRENT",
-    currency: "INR",
-    balance: 50000.0,
-  },
-  {
-    account_id: 5009,
-    customer_id: 1001,
-    bank_id: 103,
-    account_number: "SBIN000897",
-    account_type: "INVESTMENT",
     currency: "INR",
     balance: 50000.0,
   },
@@ -79,6 +71,8 @@ const banks = [
 
 export async function GET(request: NextRequest, context: {params: {id: string}}) {
     const customerId = parseInt(context.params.id);
+
+    
 
     const result = accounts
         .filter((acc) => acc.customer_id === customerId)

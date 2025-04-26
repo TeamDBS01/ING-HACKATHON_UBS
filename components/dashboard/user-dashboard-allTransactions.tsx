@@ -27,7 +27,7 @@ const allTransactionsData: Transaction[] = [
 ];
 
 export function AllTransactions() {
-  const [activeTab, setActiveTab] = useState<"all" | "income" | "expense" | "transfer">("all");
+  const [activeTab, setActiveTab] = useState<string>("all");
 
   const filteredTransactions =
     activeTab === "all"
