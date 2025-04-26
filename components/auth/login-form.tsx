@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { z } from "zod"
-import { useForm } from "react-hook-form"
+import { useForm, Control } from "react-hook-form" // Import Control type
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { signIn } from "@/app/api/auth/auth"
+
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -26,10 +28,11 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null); // Explicitly type error
   const router = useRouter()
   const { toast } = useToast()
 
-  const form = useForm<LoginFormValues>({
+  const form = useForm<LoginFormValues>({ // Explicitly specify the generic type
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -40,25 +43,33 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true)
+    setError(null); // Reset error on submit
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
+    const { error: supabaseError } = await signIn({ email: data.email, password: data.password });
 
-      // Success toast
+    if (supabaseError) {
+      setError(supabaseError.message);
+      toast({
+        title: "Login failed",
+        description: supabaseError.message,
+        variant: "destructive",
+      });
+    } else {
+      // Login successful in Supabase
       toast({
         title: "Login successful",
         description: "Welcome back to UBI CRM",
-      })
+      });
+      router.push("/dashboard"); // Redirect to dashboard after successful login
+    }
 
-      // Redirect to dashboard
-      router.push("/dashboard")
-    }, 2000)
+    setIsLoading(false)
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display Supabase error */}
         <FormField
           control={form.control}
           name="email"

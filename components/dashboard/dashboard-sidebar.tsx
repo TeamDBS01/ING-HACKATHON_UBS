@@ -14,6 +14,7 @@ import {
   Home,
   ChevronLeft,
   Menu,
+  Shield,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -33,6 +34,11 @@ const sidebarLinks = [
     title: "Transactions",
     href: "/dashboard/transactions",
     icon: BarChart3,
+  },
+  {
+    title: "KYC",
+    href: "/dashboard/kyc",
+    icon: Shield,
   },
   {
     title: "Support",

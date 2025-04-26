@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { signUp } from "@/app/api/auth/auth"
+import { supabase } from "@/lib/supabaseClient"
 
 const signupSchema = z
   .object({
@@ -49,6 +51,7 @@ export function SignupForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null); // Explicitly type error
   const router = useRouter()
   const { toast } = useToast()
 
@@ -65,25 +68,78 @@ export function SignupForm() {
 
   async function onSubmit(data: SignupFormValues) {
     setIsLoading(true)
+    setError(null); // Reset error on submit
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
+    const { data: authData,error: supabaseError } = await signUp({ email: data.email, password: data.password });
 
-      // Success toast
+    if (supabaseError) {
+      setError(supabaseError.message);
+      toast({
+        title: "Error creating account",
+        description: supabaseError.message,
+        variant: "destructive",
+      });
+    } else {
+      // Account created successfully in Supabase
       toast({
         title: "Account created",
-        description: "Welcome to UBI CRM",
-      })
+        description: "Please check your email to verify your account.",
+      });
 
-      // Redirect to dashboard
-      router.push("/dashboard")
-    }, 2000)
+      if (authData?.user) {
+        const { error: profileError } = await supabase
+          .from('bank_customers')
+          .insert({
+            kyc_status: 'UNKNOWN', // Set default kyc status
+            kyc_score: 0,             // Set default kyc score
+            risk_flag: false,           // Set default risk flag
+            joined_at: new Date(),
+          });
+  
+        if (profileError) {
+          // Handle error during profile creation.  You might want to
+          // delete the user that was just created in auth.users
+          // to prevent orphaned records.
+          console.error("Error creating user profile:", profileError);
+          setError("Failed to create user profile. Please contact support.");
+          toast({
+            title: "Error creating profile",
+            description: "Failed to create your profile. Please contact support.",
+            variant: "destructive",
+          });
+  
+          // Attempt to delete the user from auth.users to rollback.
+          const { error: deleteUserError } = await supabase.auth.admin.deleteUser(authData.user.id);
+          if (deleteUserError) {
+            console.error("Error deleting user after profile creation failure", deleteUserError);
+            toast({
+              title: "Error",
+              description: "An error occurred, and we could not clean up your account. Please contact support.",
+              variant: "destructive"
+            })
+          }
+  
+          setIsLoading(false);
+          return; // Stop execution after profile creation error
+        }
+  
+        // Profile created successfully
+        toast({
+          title: "Account created",
+          description: "Please check your email to verify your account.",
+        });
+        router.push("/auth/login");
+      }
+      router.push("/auth/login"); // Redirect to login page after successful signup (email verification required)
+    }
+
+    setIsLoading(false)
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display Supabase error */}
         <FormField
           control={form.control}
           name="name"

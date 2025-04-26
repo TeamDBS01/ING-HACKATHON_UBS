@@ -2,8 +2,14 @@ import { UserDashboardOverview } from "@/components/dashboard/user-dashboard-ove
 import { UserDashboardProducts } from "@/components/dashboard/user-dashboard-products"
 import { UserDashboardTransactions } from "@/components/dashboard/user-dashboard-transactions"
 import { UserDashboardSupport } from "@/components/dashboard/user-dashboard-support"
+import axios from "axios"
+import { useAuth } from "@/context/authContext"
+import { supabase } from "@/lib/supabaseClient"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+
+      const customer = await axios.get(`http://localhost:3000/api/auth/1001`);
+      
   return (
     <div className="space-y-6">
       <UserDashboardOverview />
